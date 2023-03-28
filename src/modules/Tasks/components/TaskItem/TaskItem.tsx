@@ -5,6 +5,7 @@ import { paths } from 'constants/paths';
 
 export function TaskItem({ task }: TaskItemProps) {
   const { name, info, isImportant, isDone, id } = task;
+
   const importantBtnClass = `task__btn btn ${
     isImportant ? 'btn-success' : 'btn-outline-success'
   } btn-sm float-right btn-important`;
@@ -19,6 +20,8 @@ export function TaskItem({ task }: TaskItemProps) {
 
   return (
     <div>
+      <p>{name}</p>
+      <p>{info}</p>
       <OptionButton className={importantBtnClass} iconClass="fa fa-exclamation" disabled={isDone} />
       <OptionButton className={doneBtnClass} iconClass="fa fa-check" />
       <OptionButton className={deleteBtnClass} iconClass="fa fa-trash-o" />

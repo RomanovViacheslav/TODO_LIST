@@ -8,8 +8,8 @@ export function TasksPage() {
   return (
     <>
       <h1>TODO LIST</h1>
-      <Button to={paths.ADD} text={'Add task'} />
       <Tasks />
+      <Button to={paths.ADD} text={'Add task'} />
     </>
   );
 }

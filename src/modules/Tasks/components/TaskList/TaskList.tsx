@@ -5,9 +5,11 @@ import { TaskListProps } from './TasksList.types';
 export function TaskList({ tasks }: TaskListProps) {
   return (
     <div className="task-wrapper">
-      <ul>
+      <ul className="list-group todo-list">
         {tasks.map((task) => (
-          <TaskItem key={task.id} task={task} />
+          <li key={task.id} className="list-group-item">
+            <TaskItem task={task} />
+          </li>
         ))}
       </ul>
     </div>
