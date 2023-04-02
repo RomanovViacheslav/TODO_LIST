@@ -1,5 +1,3 @@
-// import { FILTER_TYPES } from 'constants/index';
-
 export interface TaskEntity {
   name: string;
   id: string;
@@ -13,5 +11,3 @@ export interface TasksStatsEntity {
   important: number;
   done: number;
 }
-
-// export type FiltersType = typeof FILTER_TYPES[keyof typeof FILTER_TYPES];

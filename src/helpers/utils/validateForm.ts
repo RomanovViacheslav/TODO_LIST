@@ -1,3 +1,6 @@
-export function validateForm(value1: string, value2: string): boolean {
-  return value1.trim() !== '' && value2.trim() !== '';
-}
+import * as yup from 'yup';
+
+export const validateSchema = yup.object().shape({
+  name: yup.string().required('Поле должно быть заполнено'),
+  info: yup.string().required('Поле должно быть заполнено'),
+});

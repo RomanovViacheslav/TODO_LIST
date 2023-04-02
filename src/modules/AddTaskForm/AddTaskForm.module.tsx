@@ -1,71 +1,76 @@
-import React, { useState } from 'react';
-import { Button, Checkbox, TextField } from 'components/index';
+import React from 'react';
+import { useForm, Controller } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
+import { observer } from 'mobx-react';
+import { AddTasksStoreInstance } from './store';
+import { Button, Checkbox, Loader, TextField } from 'components/index';
 import { AddTaskEntity } from 'domains/index';
-import { validateForm } from 'helpers/index';
+import { validateSchema } from 'helpers/index';
 
-export function AddTaskForm() {
-  const [task, setTask] = useState<AddTaskEntity>({
-    name: '',
-    info: '',
-    isImportant: false,
+function AddTaskFormComponent() {
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<AddTaskEntity>({
+    resolver: yupResolver(validateSchema),
   });
 
-  const [errorState, setErrorState] = useState([false, false]);
+  const { isLoading, addTask, error } = AddTasksStoreInstance;
 
-  const handleTaskNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setTask((prevTask) => ({
-      ...prevTask,
-      name: event.target.value,
-    }));
-  };
-
-  const handleTaskInfoChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setTask((prevTask) => ({
-      ...prevTask,
-      info: event.target.value,
-    }));
-  };
-
-  const handleIsImportantChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const { checked } = event.target;
-    setTask((prevTask) => ({
-      ...prevTask,
-      isImportant: checked,
-    }));
-  };
-
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const isValid = validateForm(task.name, task.info);
-    if (isValid) {
-      console.log(task);
-      setErrorState([false, false]);
-    } else {
-      setErrorState([task.name.trim() === '', task.info.trim() === '']);
-    }
+  const onSubmit = (data: AddTaskEntity) => {
+    addTask(data);
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <TextField
-        inputType="text"
-        label="Task name"
-        placeholder="Task name"
-        value={task.name}
-        onChange={handleTaskNameChange}
-        errorText={errorState[0] ? 'Поле должно быть заполнено' : ''}
-      />
-      <TextField
-        inputType="text"
-        label="What to do(description)"
-        placeholder="What to do(description)"
-        value={task.info}
-        onChange={handleTaskInfoChange}
-        errorText={errorState[1] ? 'Поле должно быть заполнено' : ''}
-      />
-      <Checkbox label="Important" checked={task.isImportant} onChange={handleIsImportantChange} />
+    <>
+      <Loader isLoading={isLoading}>
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <Controller
+            name="name"
+            control={control}
+            defaultValue=""
+            render={({ field }) => (
+              <TextField
+                inputType="text"
+                label="Task name"
+                placeholder="Task name"
+                value={field.value}
+                onChange={field.onChange}
+                errorText={errors.name?.message}
+              />
+            )}
+          />
 
-      <Button text="Add task" type="submit" />
-    </form>
+          <Controller
+            name="info"
+            control={control}
+            defaultValue=""
+            render={({ field }) => (
+              <TextField
+                inputType="text"
+                label="What to do(description)"
+                placeholder="What to do(description)"
+                value={field.value}
+                onChange={field.onChange}
+                errorText={errors.info?.message}
+              />
+            )}
+          />
+
+          <Controller
+            name="isImportant"
+            control={control}
+            defaultValue={false}
+            render={({ field }) => <Checkbox label="Important" checked={field.value} onChange={field.onChange} />}
+          />
+
+          <Button text="Add task" type="submit" />
+        </form>
+      </Loader>
+      {error && <p>{error}</p>}
+    </>
   );
 }
+
+export const AddTaskForm = observer(AddTaskFormComponent);
