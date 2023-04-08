@@ -3,6 +3,7 @@ import { observer } from 'mobx-react';
 import { TaskItem } from '../TaskItem';
 import { TasksStoreInstance } from '../../store';
 import { Loader } from 'components/index';
+import './TaskList.css';
 
 export function TaskListComponent() {
   const { isLoading, tasks, error, deleteTask, toggleTaskCompletion, toggleTaskImportance } = TasksStoreInstance;

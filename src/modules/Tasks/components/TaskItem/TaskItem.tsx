@@ -16,11 +16,15 @@ export function TaskItem({ task, deleteTask, clickIsDone, clickIsImportant }: Ta
 
   const editBtnClass = 'task__btn btn btn-outline-secondary btn-sm float-right';
 
-  const editBtnLink = `${paths.EDIT}/${id}`;
-
   const title = `task__label ${isDone ? 'text-decoration-line-through text-secondary' : ''} ${
     isImportant ? 'text-success fw-bold' : ''
   }`;
+
+  const description = `${isDone ? 'text-decoration-line-through text-secondary' : ''} ${
+    isImportant ? 'text-success fw-bold' : ''
+  }`;
+  const editBtnLink = `${paths.EDIT}/${id}`;
+
   const handleDelete = () => deleteTask(id);
   const handleIsDone = () => clickIsDone(id, isDone);
   const handleIsImportant = () => clickIsImportant(id, isImportant);
@@ -28,7 +32,7 @@ export function TaskItem({ task, deleteTask, clickIsDone, clickIsImportant }: Ta
   return (
     <div>
       <p className={title}>{name}</p>
-      <p>{info}</p>
+      <p className={description}>{info}</p>
       <OptionButton
         className={importantBtnClass}
         iconClass="fa fa-exclamation"
