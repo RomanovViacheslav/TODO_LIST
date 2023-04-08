@@ -48,10 +48,8 @@ class AddTaskStore {
     const externalParams = mapToExternalCreateTask(task);
 
     try {
-      const result = await TaskAgentInstance.createTask(externalParams);
+      await TaskAgentInstance.createTask(externalParams);
       runInAction(() => {
-        console.log(result);
-
         this._isSuccess = true;
       });
     } catch (error) {

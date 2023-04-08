@@ -2,7 +2,7 @@ import { makeObservable, observable, action, computed, runInAction } from 'mobx'
 
 import { TaskEntity, TasksStatsEntity, SearchFilterTaskEntity } from 'domains/index';
 import { TaskAgentInstance } from 'http/index';
-import { mapOneTask, mapAllTasks, mapSearchFilterToQuery, mapTaskStats } from 'helpers/index';
+import { mapAllTasks, mapSearchFilterToQuery, mapTaskStats } from 'helpers/index';
 
 type PrivateFields = '_error' | '_isLoading' | '_tasks' | '_tasksStats' | '_searchForm';
 
@@ -28,6 +28,11 @@ class TasksStore {
       error: computed,
       tasks: computed,
       tasksStats: computed,
+
+      loadTasks: action,
+      deleteTask: action,
+      toggleTaskImportance: action,
+      toggleTaskCompletion: action,
     });
   }
 
@@ -151,7 +156,6 @@ class TasksStore {
   toggleTaskCompletion = async (taskId: string, currentState: boolean) => {
     const updateFields = {
       isCompleted: !currentState,
-      // isImportant: currentState ? undefined : false,
     };
 
     await this.modifyTask(taskId, updateFields);

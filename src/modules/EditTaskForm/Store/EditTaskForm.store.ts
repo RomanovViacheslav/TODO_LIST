@@ -58,7 +58,6 @@ class EditTaskStore {
       const result = await TaskAgentInstance.updateTask(id, externalParams);
       runInAction(() => {
         this._task = mapUpdateTask(result);
-        console.log(result);
         this._isSuccess = true;
       });
     } catch (error) {
@@ -85,7 +84,6 @@ class EditTaskStore {
       const task = mapOneTask(result);
       runInAction(() => {
         this._task = task;
-        console.log(task);
       });
     } catch (error) {
       runInAction(() => {

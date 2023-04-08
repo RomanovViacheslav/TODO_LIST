@@ -11,7 +11,6 @@ function SearchFiltersComponent({ onChange, disabled, filters }: SearchFiltersPr
       if (isImportant !== undefined) newFilters.isImportant = isImportant;
       if (isDone !== undefined) newFilters.isDone = isDone;
       onChange(newFilters);
-      console.log(newFilters);
     }
   };
 
