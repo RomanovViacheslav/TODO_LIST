@@ -1,0 +1,8 @@
+.list{
+  margin: 16px 0;
+  padding: 0;
+}
+
+.list-elem {
+  list-style-type: none;
+}

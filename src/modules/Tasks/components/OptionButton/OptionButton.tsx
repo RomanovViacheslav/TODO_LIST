@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { OptionButtonProps } from './OptionButton.types';
 
-export function OptionButton({ className, iconClass, disabled, to }: OptionButtonProps) {
+export function OptionButton({ className, iconClass, disabled, to, onClick }: OptionButtonProps) {
   if (to) {
     return (
       <Link className={className} to={to}>
@@ -12,7 +12,7 @@ export function OptionButton({ className, iconClass, disabled, to }: OptionButto
   }
 
   return (
-    <button type="button" className={className} disabled={disabled}>
+    <button type="button" className={className} disabled={disabled} onClick={onClick}>
       <i className={iconClass} />
     </button>
   );

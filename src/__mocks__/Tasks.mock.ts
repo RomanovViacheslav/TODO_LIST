@@ -9,14 +9,14 @@ export const TasksStatsMock: TasksStatsEntity = {
 export const TasksMock: TaskEntity[] = [
   {
     name: 'Поспать',
-    id: '34',
+    id: '2',
     info: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit',
     isImportant: false,
     isDone: true,
   },
   {
     name: 'Поесть',
-    id: '2343',
+    id: '3',
     info: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit',
     isImportant: true,
     isDone: false,
@@ -30,7 +30,7 @@ export const TasksMock: TaskEntity[] = [
   },
   {
     name: 'Полежать',
-    id: '114331',
+    id: '6',
     info: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit',
     isImportant: false,
     isDone: false,

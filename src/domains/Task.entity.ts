@@ -11,3 +11,13 @@ export interface TasksStatsEntity {
   important: number;
   done: number;
 }
+
+export type FiltersType = {
+  isImportant?: boolean;
+  isDone?: boolean;
+};
+
+export interface SearchFilterTaskEntity {
+  name_like?: string;
+  filters: FiltersType;
+}

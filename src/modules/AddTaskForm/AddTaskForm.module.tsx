@@ -1,13 +1,16 @@
-import React from 'react';
+import React, { FormEvent, useEffect } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { observer } from 'mobx-react';
+import { useNavigate } from 'react-router-dom';
 import { AddTasksStoreInstance } from './store';
 import { Button, Checkbox, Loader, TextField } from 'components/index';
 import { AddTaskEntity } from 'domains/index';
 import { validateSchema } from 'helpers/index';
+import { paths } from 'constants/paths';
 
 function AddTaskFormComponent() {
+  const navigate = useNavigate();
   const {
     control,
     handleSubmit,
@@ -16,16 +19,25 @@ function AddTaskFormComponent() {
     resolver: yupResolver(validateSchema),
   });
 
-  const { isLoading, addTask, error } = AddTasksStoreInstance;
+  const { isLoading, addTask, error, resetIsSuccess, isSuccess } = AddTasksStoreInstance;
+  useEffect(() => {
+    if (isSuccess) {
+      resetIsSuccess();
+      navigate(paths.MAIN);
+    }
+  }, [isSuccess]);
 
-  const onSubmit = (data: AddTaskEntity) => {
-    addTask(data);
+  const onSubmit = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    handleSubmit((data: AddTaskEntity) => {
+      addTask(data);
+    })();
   };
 
   return (
     <>
       <Loader isLoading={isLoading}>
-        <form onSubmit={handleSubmit(onSubmit)}>
+        <form onSubmit={onSubmit}>
           <Controller
             name="name"
             control={control}

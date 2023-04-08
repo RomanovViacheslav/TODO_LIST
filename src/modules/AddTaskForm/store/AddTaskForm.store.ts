@@ -1,21 +1,27 @@
-import { makeObservable, observable, action, computed } from 'mobx';
+import { makeObservable, observable, action, computed, runInAction } from 'mobx';
 
 import { AddTaskEntity } from 'domains/index';
+import { mapToExternalCreateTask } from 'helpers/index';
+import { TaskAgentInstance } from 'http/index';
 
-type PrivateFields = '_error' | '_isLoading';
+type PrivateFields = '_error' | '_isLoading' | '_isSuccess';
 class AddTaskStore {
   private _isLoading = false;
   private _error: string | null = null;
+  private _isSuccess = false;
 
   constructor() {
     makeObservable<this, PrivateFields>(this, {
       _isLoading: observable,
       _error: observable,
+      _isSuccess: observable,
 
       isLoading: computed,
       error: computed,
+      isSuccess: computed,
 
       addTask: action,
+      resetIsSuccess: action,
     });
   }
 
@@ -27,22 +33,38 @@ class AddTaskStore {
     return this._error;
   }
 
-  addTask = (task: AddTaskEntity) => {
+  get isSuccess() {
+    return this._isSuccess;
+  }
+
+  resetIsSuccess = () => {
+    this._isSuccess = false;
+  };
+
+  addTask = async (task: AddTaskEntity) => {
     this._isLoading = true;
     this._error = null;
-    console.log(task);
 
-    // try {
-    //   const response = await addTaskAPI(task);
-    //   runInAction(() => {
-    //     this._isLoading = false;
-    //   });
-    // } catch (error) {
-    //   runInAction(() => {
-    //     this._isLoading = false;
-    //     this._error = error.message;
-    //   });
-    // }
+    const externalParams = mapToExternalCreateTask(task);
+
+    try {
+      const result = await TaskAgentInstance.createTask(externalParams);
+      runInAction(() => {
+        console.log(result);
+
+        this._isSuccess = true;
+      });
+    } catch (error) {
+      runInAction(() => {
+        if (error instanceof Error) {
+          this._error = error.message;
+        }
+      });
+    } finally {
+      runInAction(() => {
+        this._isLoading = false;
+      });
+    }
   };
 }
 

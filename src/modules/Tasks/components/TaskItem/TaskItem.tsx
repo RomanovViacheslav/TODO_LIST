@@ -3,7 +3,7 @@ import { OptionButton } from '../OptionButton';
 import { TaskItemProps } from './TaskItem.types';
 import { paths } from 'constants/paths';
 
-export function TaskItem({ task }: TaskItemProps) {
+export function TaskItem({ task, deleteTask, clickIsDone, clickIsImportant }: TaskItemProps) {
   const { name, info, isImportant, isDone, id } = task;
 
   const importantBtnClass = `task__btn btn ${
@@ -18,13 +18,25 @@ export function TaskItem({ task }: TaskItemProps) {
 
   const editBtnLink = `${paths.EDIT}/${id}`;
 
+  const title = `task__label ${isDone ? 'text-decoration-line-through text-secondary' : ''} ${
+    isImportant ? 'text-success fw-bold' : ''
+  }`;
+  const handleDelete = () => deleteTask(id);
+  const handleIsDone = () => clickIsDone(id, isDone);
+  const handleIsImportant = () => clickIsImportant(id, isImportant);
+
   return (
     <div>
-      <p>{name}</p>
+      <p className={title}>{name}</p>
       <p>{info}</p>
-      <OptionButton className={importantBtnClass} iconClass="fa fa-exclamation" disabled={isDone} />
-      <OptionButton className={doneBtnClass} iconClass="fa fa-check" />
-      <OptionButton className={deleteBtnClass} iconClass="fa fa-trash-o" />
+      <OptionButton
+        className={importantBtnClass}
+        iconClass="fa fa-exclamation"
+        disabled={isDone}
+        onClick={handleIsImportant}
+      />
+      <OptionButton className={doneBtnClass} iconClass="fa fa-check" onClick={handleIsDone} />
+      <OptionButton className={deleteBtnClass} iconClass="fa fa-trash-o" onClick={handleDelete} />
       <OptionButton className={editBtnClass} iconClass="fa fa-pencil" to={editBtnLink} />
     </div>
   );

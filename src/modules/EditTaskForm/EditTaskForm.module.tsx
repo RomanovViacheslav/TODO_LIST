@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { FormEvent, useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -12,37 +12,51 @@ import { paths } from 'constants/index';
 function EditTaskFormComponent() {
   const navigate = useNavigate();
   const [isCompleted, setIsCompleted] = useState(false);
-
   const { id } = useParams();
 
   const {
     control,
     handleSubmit,
     formState: { errors },
+    reset,
   } = useForm<TaskUpdateEntity>({
     resolver: yupResolver(validateSchema),
   });
 
-  const { isLoading, editTask, error, task, loadTask } = EditTasksStoreInstance;
+  const { isLoading, editTask, error, task, isSuccess, loadTask, resetIsSuccess } = EditTasksStoreInstance;
 
   useEffect(() => {
     if (id) {
       loadTask(id);
     }
-  }, [loadTask, id]);
+  }, [id]);
 
-  const onSubmit = (data: TaskUpdateEntity) => {
-    const updatedTask = {
-      ...task,
-      ...data,
-    };
-    editTask(updatedTask);
+  useEffect(() => {
+    if (task) {
+      reset(task);
+    }
+  }, [task]);
+
+  useEffect(() => {
+    if (isSuccess) {
+      resetIsSuccess();
+      navigate(paths.MAIN);
+    }
+  }, [isSuccess]);
+  const onSubmit = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    handleSubmit((data: TaskUpdateEntity) => {
+      const updatedTask = {
+        ...data,
+      };
+      editTask(updatedTask, id as string);
+    })();
   };
 
   return (
     <Loader isLoading={isLoading}>
       {task ? (
-        <form onSubmit={handleSubmit(onSubmit)}>
+        <form onSubmit={onSubmit}>
           <Controller
             name="name"
             control={control}
@@ -109,7 +123,9 @@ function EditTaskFormComponent() {
           {error && <p>{error}</p>}
         </form>
       ) : (
-        <p>Задача не найдена...</p>
+        <>
+          <p>Что то не так...</p> {error && <p>{error}</p>}
+        </>
       )}
     </Loader>
   );

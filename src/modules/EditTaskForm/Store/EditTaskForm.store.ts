@@ -1,23 +1,29 @@
 import { makeObservable, observable, action, computed, runInAction } from 'mobx';
 
-import { TaskUpdateEntity } from 'domains/index';
+import { TaskEntity, TaskUpdateEntity } from 'domains/index';
+import { TaskAgentInstance } from 'http/index';
+import { mapOneTask, mapToExternalUpdateTask, mapUpdateTask } from 'helpers/index';
 
-type PrivateFields = '_error' | '_isLoading' | '_task';
+type PrivateFields = '_error' | '_isLoading' | '_task' | '_isSuccess';
 class EditTaskStore {
   private _isLoading = false;
   private _error: string | null = null;
-  private _task: TaskUpdateEntity | null = null;
+  private _task: TaskEntity | null = null;
+  private _isSuccess = false;
 
   constructor() {
     makeObservable<this, PrivateFields>(this, {
       _isLoading: observable,
       _error: observable,
       _task: observable,
+      _isSuccess: observable,
 
       isLoading: computed,
       error: computed,
       task: computed,
+      isSuccess: computed,
 
+      resetIsSuccess: action,
       editTask: action,
       loadTask: action,
     });
@@ -35,42 +41,61 @@ class EditTaskStore {
     return this._task;
   }
 
-  editTask = (task: TaskUpdateEntity) => {
+  get isSuccess() {
+    return this._isSuccess;
+  }
+  resetIsSuccess = () => {
+    this._isSuccess = false;
+  };
+
+  editTask = async (task: TaskUpdateEntity, id: string) => {
     this._isLoading = true;
     this._error = null;
-    console.log(task);
 
-    // try {
-    //   const response = await addTaskAPI(task);
-    //   runInAction(() => {
-    //     this._isLoading = false;
-    //   });
-    // } catch (error) {
-    //   runInAction(() => {
-    //     this._isLoading = false;
-    //     this._error = error.message;
-    //   });
-    // }
+    const externalParams = mapToExternalUpdateTask(task);
+
+    try {
+      const result = await TaskAgentInstance.updateTask(id, externalParams);
+      runInAction(() => {
+        this._task = mapUpdateTask(result);
+        console.log(result);
+        this._isSuccess = true;
+      });
+    } catch (error) {
+      runInAction(() => {
+        if (error instanceof Error) {
+          this._error = error.message;
+        }
+      });
+    } finally {
+      runInAction(() => {
+        this._isLoading = false;
+      });
+    }
   };
 
   loadTask = async (id: string) => {
     this._isLoading = true;
     this._error = null;
+    this._task = null;
+
     try {
-      const response = await fetch(`https://intership-liga.ru/tasks/${id}`);
-      if (!response.ok) {
-        throw new Error('Ошибочка');
-      }
-      const task = await response.json();
+      const result = await TaskAgentInstance.getOneTask(id);
+
+      const task = mapOneTask(result);
       runInAction(() => {
-        this._isLoading = false;
         this._task = task;
         console.log(task);
       });
     } catch (error) {
       runInAction(() => {
+        if (error instanceof Error) {
+          this._error = error.message;
+        }
+      });
+    } finally {
+      runInAction(() => {
         this._isLoading = false;
-        // this._error = error.message;
       });
     }
   };

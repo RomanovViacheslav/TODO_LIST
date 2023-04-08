@@ -3,4 +3,5 @@ export interface OptionButtonProps {
   iconClass: string;
   disabled?: boolean;
   to?: string;
+  onClick?: () => void;
 }
